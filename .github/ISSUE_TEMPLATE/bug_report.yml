@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a reproducible problem with Spreadsheet Viewer.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share a minimal reproduction. Do not upload real spreadsheets, API logs, credentials, or private workspace data.
+  - type: input
+    id: extension-version
+    attributes:
+      label: Extension version
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: vscode-version
+    attributes:
+      label: VS Code version and host
+      description: Include desktop, remote, or browser host and operating system.
+      placeholder: "VS Code 1.x, desktop, macOS/Windows/Linux"
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: File format
+      options:
+        - CSV
+        - TSV
+        - XLSX
+        - XLS
+        - Other / not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Include expected behavior, actual behavior, and redacted steps to reproduce.
+      placeholder: "1. Open a small synthetic file…"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant error message
+      description: Remove local paths, file contents, identifiers, and other sensitive information.
+      render: text
+    validations:
+      required: false

@@ -1,0 +1,10 @@
+# Local development and generated artifacts
+node_modules/
+dist/
+*.vsix
+.DS_Store
+.codegraph
+
+# Local API and customer data; never commit log exports
+/api_logs.csv
+.vscode/README.marketplace.md

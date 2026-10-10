@@ -1,0 +1,25 @@
+name: Product idea
+description: Describe a user problem and a possible improvement.
+title: "[Idea]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: user-problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the person, moment, and task before suggesting a solution.
+    validations:
+      required: true
+  - type: textarea
+    id: current-workaround
+    attributes:
+      label: How do you handle it today?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What would a better outcome look like?
+      description: A rough solution is welcome, but it is not a commitment to build it.
+    validations:
+      required: true

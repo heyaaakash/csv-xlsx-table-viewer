@@ -1,0 +1,131 @@
+{
+  "name": "csv-xlsx-table-viewer",
+  "displayName": "CSV XLSX Table Viewer",
+  "description": "A VS Code custom editor for CSV, TSV, XLSX, and XLS files.",
+  "version": "1.0.0",
+  "publisher": "aakashrohilla",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heyaaakash/csv-xlsx-table-viewer.git"
+  },
+  "homepage": "https://github.com/heyaaakash/csv-xlsx-table-viewer#readme",
+  "bugs": {
+    "url": "https://github.com/heyaaakash/csv-xlsx-table-viewer/issues"
+  },
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "csv",
+    "tsv",
+    "xlsx",
+    "excel",
+    "spreadsheet",
+    "table",
+    "viewer"
+  ],
+  "main": "./dist/1.0.0/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "csvViewer.openTable",
+        "title": "Open as Table",
+        "icon": "$(table)"
+      }
+    ],
+    "configuration": {
+      "title": "Spreadsheet Viewer",
+      "properties": {
+        "csvViewer.themeMode": {
+          "type": "string",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "colorful",
+            "minimal"
+          ],
+          "markdownDescription": "Theme style for CSV viewer. `auto` follows VS Code colors, `colorful` adds vibrant accents, `minimal` uses restrained contrast."
+        },
+        "csvViewer.density": {
+          "type": "string",
+          "default": "comfortable",
+          "enum": [
+            "comfortable",
+            "compact"
+          ],
+          "markdownDescription": "Cell density for large tables. Use `compact` to fit more rows on screen."
+        },
+        "csvViewer.maxRowsForClientSort": {
+          "type": "number",
+          "default": 200000,
+          "minimum": 1000,
+          "markdownDescription": "Maximum filtered rows allowed for in-browser sorting to prevent UI stalls."
+        },
+        "csvViewer.previewRowLimit": {
+          "type": "number",
+          "default": 200000,
+          "minimum": 100,
+          "markdownDescription": "Maximum number of rows loaded into the interactive table before the editor falls back to a preview mode."
+        },
+        "csvViewer.previewByteLimit": {
+          "type": "number",
+          "default": 104857600,
+          "minimum": 1048576,
+          "markdownDescription": "Maximum file size in bytes to fully load before the editor switches to a preview-oriented view."
+        }
+      }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "csvViewer.openTable",
+          "when": "resourceExtname =~ /\\.(csv|tsv|xlsx|xls)$/i",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "csvViewer.openTable",
+          "when": "resourceExtname =~ /\\.(csv|tsv|xlsx|xls)$/i",
+          "group": "navigation"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "csvViewer.csvEditor",
+        "displayName": "Spreadsheet Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.csv"
+          },
+          {
+            "filenamePattern": "*.tsv"
+          },
+          {
+            "filenamePattern": "*.xlsx"
+          },
+          {
+            "filenamePattern": "*.xls"
+          }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "dependencies": {},
+  "scripts": {
+    "build": "node scripts/build.js",
+    "prepare:marketplace-readme": "node scripts/prepare-marketplace-readme.js",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8",
+    "xlsx": "^0.18.5"
+  }
+}
