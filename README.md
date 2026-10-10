@@ -1,6 +1,10 @@
-# Spreadsheet Viewer
+<p align="center">
+  <img src="icon.png" alt="CSV XLSX Table Viewer logo" width="128" />
+</p>
 
-**Inspect and edit CSV, TSV, XLSX, and XLS files without leaving VS Code.** Open a file as a table, find the row or value you need, make a change, and save it back in its original format.
+<h1 align="center">CSV XLSX Table Viewer</h1>
+
+<p align="center"><strong>Inspect and edit CSV, TSV, XLSX, and XLS files without leaving VS Code.</strong> Open a file as a table, find the row or value you need, make a change, and save it back in its original format.</p>
 
 <p align="center">
   <a href="https://marketplace.visualstudio.com/items?itemName=aakashrohilla.csv-xlsx-table-viewer">
@@ -18,7 +22,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-![Spreadsheet Viewer showing a table in VS Code](https://1vrxnmjjog.ucarecd.net/6614e201-8c92-4f36-ace6-e8efef029d1d/image.png)
+![CSV XLSX Table Viewer showing a table in VS Code](https://1vrxnmjjog.ucarecd.net/6614e201-8c92-4f36-ace6-e8efef029d1d/image.png)
 
 ## Start in under a minute
 
@@ -36,9 +40,9 @@ If a file opens as plain text, choose **Open as Table** from the editor title or
 
 ## A small workflow, kept in your editor
 
-Spreadsheet Viewer turns a file that usually sends you to another app into an editor surface beside your code. CSV and TSV files become searchable tables. Excel workbooks keep their sheets together. When you make a change, save writes the data back to the original file and format.
+CSV XLSX Table Viewer turns a file that usually sends you to another app into an editor surface beside your code. CSV and TSV files become searchable tables. Excel workbooks keep their sheets together. When you make a change, save writes the data back to the original file and format.
 
-![Spreadsheet Viewer preview mode](https://1vrxnmjjog.ucarecd.net/11d2a5fc-f7b4-4a20-9618-6081dd9c6875/image.png)
+![CSV XLSX Table Viewer preview mode](https://1vrxnmjjog.ucarecd.net/11d2a5fc-f7b4-4a20-9618-6081dd9c6875/image.png)
 
 ### What you can do
 
@@ -60,7 +64,7 @@ The extension requires VS Code `^1.85.0` and a Node extension host. VS Code for 
 
 ## Settings
 
-Open **Preferences: Open Settings** and search for **Spreadsheet Viewer**.
+Open **Preferences: Open Settings** and search for **CSV XLSX Table Viewer**.
 
 | Setting | Default | What it controls |
 | --- | --- | --- |

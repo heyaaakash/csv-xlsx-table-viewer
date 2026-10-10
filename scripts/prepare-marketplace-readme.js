@@ -13,20 +13,15 @@ const badgeUrls = [
   'https://shieldcn.dev/vscode/v/aakashrohilla/csv-xlsx-table-viewer.svg',
 ];
 
-const start = readme.indexOf('<p align="center">');
-const endTag = '</p>';
-const end = start === -1 ? -1 : readme.indexOf(endTag, start);
+const badgeBlock = readme
+  .match(/<p align="center">[\s\S]*?<\/p>/g)
+  ?.find((block) => badgeUrls.every((url) => block.includes(url)));
 
-if (start === -1 || end === -1) {
-  throw new Error('Could not find the centered Marketplace badge block in README.md');
-}
-
-const badgeBlock = readme.slice(start, end + endTag.length);
-if (!badgeUrls.every((url) => badgeBlock.includes(url))) {
+if (!badgeBlock) {
   throw new Error('The canonical Marketplace badge block does not contain all expected ShieldCN URLs');
 }
 
-const packageReadme = `${readme.slice(0, start)}${readme.slice(end + endTag.length)}`;
+const packageReadme = readme.replace(badgeBlock, '');
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, packageReadme);
 

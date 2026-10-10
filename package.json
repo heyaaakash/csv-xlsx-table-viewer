@@ -39,7 +39,7 @@
       }
     ],
     "configuration": {
-      "title": "Spreadsheet Viewer",
+      "title": "CSV XLSX Table Viewer",
       "properties": {
         "csvViewer.themeMode": {
           "type": "string",
@@ -99,7 +99,7 @@
     "customEditors": [
       {
         "viewType": "csvViewer.csvEditor",
-        "displayName": "Spreadsheet Viewer",
+        "displayName": "CSV XLSX Table Viewer",
         "selector": [
           {
             "filenamePattern": "*.csv"

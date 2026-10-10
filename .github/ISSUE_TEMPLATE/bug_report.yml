@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a reproducible problem with Spreadsheet Viewer.
+description: Report a reproducible problem with CSV XLSX Table Viewer.
 title: "[Bug]: "
 labels: [bug]
 body:

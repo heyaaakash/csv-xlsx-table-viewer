@@ -1,6 +1,6 @@
 # Architecture
 
-Spreadsheet Viewer is a Node-based VS Code extension with a custom-editor webview.
+CSV XLSX Table Viewer is a Node-based VS Code extension with a custom-editor webview.
 
 ## How a file is opened
 
