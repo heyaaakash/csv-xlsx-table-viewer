@@ -2,7 +2,7 @@
   "name": "csv-xlsx-table-viewer",
   "displayName": "CSV XLSX Table Viewer",
   "description": "A VS Code custom editor for CSV, TSV, XLSX, and XLS files.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "aakashrohilla",
   "license": "MIT",
   "repository": {
@@ -29,7 +29,7 @@
     "table",
     "viewer"
   ],
-  "main": "./dist/1.0.0/extension.js",
+  "main": "./dist/1.1.0/extension.js",
   "contributes": {
     "commands": [
       {
@@ -59,6 +59,21 @@
             "compact"
           ],
           "markdownDescription": "Cell density for large tables. Use `compact` to fit more rows on screen."
+        },
+        "csvViewer.hasHeader": {
+          "type": "string",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "always",
+            "never"
+          ],
+          "enumDescriptions": [
+            "Automatically detect whether the first row contains column headers based on data content.",
+            "Always treat the first row as column headers.",
+            "Never treat the first row as column headers (show spreadsheet column letters A, B, C...)."
+          ],
+          "markdownDescription": "Determines whether the first row is treated as the column header. Can also be toggled directly from the editor toolbar."
         },
         "csvViewer.maxRowsForClientSort": {
           "type": "number",

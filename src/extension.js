@@ -30,10 +30,45 @@ function getConfig() {
   return {
     themeMode: config.get('themeMode', 'auto'),
     density: config.get('density', 'comfortable'),
+    hasHeader: config.get('hasHeader', 'auto'),
     maxRowsForClientSort: config.get('maxRowsForClientSort', 200000),
     previewRowLimit: config.get('previewRowLimit', 5000),
     previewByteLimit: config.get('previewByteLimit', 10485760),
   };
+}
+
+function detectHasHeader(rows) {
+  if (!rows || rows.length < 2) {
+    return false;
+  }
+  const row0 = rows[0];
+  const row1 = rows[1];
+  if (!row0 || row0.length === 0) {
+    return false;
+  }
+
+  const nonBlank0 = row0.filter((c) => String(c ?? '').trim() !== '');
+  if (nonBlank0.length === 0) {
+    return false;
+  }
+
+  const isNumeric = (val) => {
+    const s = String(val ?? '').trim();
+    return s !== '' && !isNaN(Number(s));
+  };
+
+  const row0AllNumeric = nonBlank0.every(isNumeric);
+  if (row0AllNumeric) {
+    return false;
+  }
+
+  const row0AnyNumeric = nonBlank0.some(isNumeric);
+  const row1AnyNumeric = row1.some(isNumeric);
+  if (!row0AnyNumeric && row1AnyNumeric) {
+    return true;
+  }
+
+  return true;
 }
 
 function detectDelimiter(sampleText) {
@@ -424,11 +459,11 @@ function buildEditorHtml(nonce, state) {
     .viewport::-webkit-scrollbar{width:10px;height:10px}
     .viewport::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}
     table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;table-layout:fixed}
-    thead th{position:sticky;top:0;z-index:4;background:var(--surface);border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:8px 12px;text-align:left;white-space:nowrap;user-select:none;position:relative}
-    thead th.corner{left:0;z-index:6;position:sticky;width:64px;text-align:right}
+    thead th{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:2px solid var(--border);border-right:1px solid var(--border);padding:8px 12px;text-align:left;white-space:nowrap;user-select:none}
+    thead th.corner{left:0;top:0;z-index:15;position:sticky;width:64px;text-align:right;background:var(--surface)}
     tbody td{border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:7px 12px;white-space:nowrap;max-width:360px;overflow:hidden;text-overflow:ellipsis;background:var(--bg);position:relative}
     tbody tr:hover td{background:var(--hover)}
-    tbody td.rowhead{position:sticky;left:0;z-index:3;background:var(--bg);color:var(--muted);text-align:right;width:64px;user-select:none;white-space:nowrap}
+    tbody td.rowhead{position:sticky;left:0;z-index:5;background:var(--bg);color:var(--muted);text-align:right;width:64px;user-select:none;white-space:nowrap}
     td.editing{outline:2px solid var(--accent) !important;outline-offset:-2px;background:color-mix(in srgb, var(--accent) 14%, var(--bg)) !important;z-index:5;color:var(--fg) !important}
     td.cell-selected{outline:2px solid var(--accent);outline-offset:-2px;background:color-mix(in srgb, var(--accent) 8%, var(--bg)) !important;z-index:2}
     td.cell-selected::after {
@@ -605,37 +640,125 @@ function buildEditorHtml(nonce, state) {
       background: var(--vscode-editorWidget-background, #252526);
       border-bottom: 1px solid var(--border);
       padding: 4px 12px;
-      gap: 8px;
-      height: 32px;
+      gap: 10px;
+      height: 36px;
       font-family: inherit;
+      flex-shrink: 0;
     }
     .formula-cell-address {
       font-weight: 600;
       color: var(--accent);
-      min-width: 48px;
+      min-width: 56px;
       text-align: center;
       font-size: 12px;
       user-select: none;
+      font-family: var(--vscode-editor-font-family, monospace);
     }
     .formula-bar-divider {
       width: 1px;
-      height: 18px;
+      height: 20px;
       background: var(--border);
+      flex-shrink: 0;
     }
     .formula-input {
       flex: 1;
+      min-width: 120px;
       background: transparent;
       border: none;
       outline: none;
       color: var(--fg);
       font-family: var(--vscode-editor-font-family, monospace);
       font-size: 12px;
-      padding: 2px 6px;
+      padding: 4px 8px;
     }
     .formula-input:focus {
       background: var(--vscode-input-background, #3c3c3c);
       border-radius: 4px;
       outline: 1px solid var(--vscode-focusBorder, #007fd4);
+    }
+
+    /* Header Row Toggle Pill */
+    .header-toggle-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--vscode-editor-background, #1e1e1e);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      user-select: none;
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .header-toggle-pill:hover {
+      background: var(--hover);
+      border-color: var(--vscode-focusBorder, #007fd4);
+    }
+    .header-toggle-pill .toggle-icon {
+      font-size: 12px;
+      line-height: 1;
+    }
+    .header-toggle-pill .toggle-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--fg);
+    }
+    .header-toggle-pill .toggle-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+      line-height: 1;
+    }
+    .header-toggle-pill.active .toggle-badge {
+      background: var(--accent);
+      color: var(--vscode-button-foreground, #ffffff);
+    }
+    .header-toggle-pill:not(.active) .toggle-badge {
+      background: rgba(127, 127, 127, 0.25);
+      color: var(--muted);
+    }
+    .header-toggle-pill.active {
+      border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+      background: color-mix(in srgb, var(--accent) 10%, var(--vscode-editor-background, #1e1e1e));
+    }
+
+    /* Column Headers */
+    .th-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: calc(100% - 8px);
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    .col-title {
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .col-letter-sub {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      opacity: 0.75;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: rgba(127, 127, 127, 0.2);
+      vertical-align: middle;
+      line-height: 1.2;
+      flex-shrink: 0;
     }
 
     /* Sorting */
@@ -711,6 +834,12 @@ function buildEditorHtml(nonce, state) {
     <div id="formula-cell-address" class="formula-cell-address"></div>
     <div class="formula-bar-divider"></div>
     <input type="text" id="formula-input" class="formula-input" placeholder="Enter value..." />
+    <div class="formula-bar-divider"></div>
+    <button id="header-toggle-btn" class="header-toggle-pill" type="button" aria-pressed="true" title="First row is currently used as the header. Click to treat as normal data row.">
+      <span class="toggle-icon">🏷️</span>
+      <span class="toggle-text">First row as header</span>
+      <span id="header-toggle-status" class="toggle-badge">ON</span>
+    </button>
   </div>
   <div id="viewport" class="viewport" tabindex="0"></div>
 
@@ -758,6 +887,7 @@ function buildEditorHtml(nonce, state) {
 
       const state = {
         ...initialState,
+        hasHeader: Boolean(initialState.hasHeader),
         activeSheetIndex: Math.max(0, initialState.activeSheetIndex || 0),
         selected: null,
         colWidths: [],
@@ -798,9 +928,21 @@ function buildEditorHtml(nonce, state) {
         const sheet = currentSheet();
         const rows = sheet.rows || [];
         const columnCount = columnCountForSheet(sheet, rows);
+        const hasHeader = Boolean(state.hasHeader && rows.length > 0);
         const headers = [];
         for (let i = 0; i < columnCount; i++) {
-          headers.push(columnLabel(i));
+          const colLetter = columnLabel(i);
+          if (hasHeader && rows[0] && rows[0][i] !== undefined && String(rows[0][i]).trim() !== '') {
+            headers.push({
+              title: String(rows[0][i]),
+              letter: colLetter,
+            });
+          } else {
+            headers.push({
+              title: colLetter,
+              letter: colLetter,
+            });
+          }
         }
 
         let html = '<table>';
@@ -823,18 +965,35 @@ function buildEditorHtml(nonce, state) {
             if (state.sortDirection === 'asc') sortIndicator = ' ▲';
             else if (state.sortDirection === 'desc') sortIndicator = ' ▼';
           }
-          html += '<th style="' + style + '" data-col="' + index + '">' + escapeHtml(headers[index]) + '<span class="sort-indicator">' + sortIndicator + '</span><div class="col-resizer" data-col="' + index + '"></div></th>';
+          const headerObj = headers[index];
+          const displayTitle = escapeHtml(headerObj.title);
+          const letterSub = hasHeader && headerObj.title !== headerObj.letter
+            ? '<span class="col-letter-sub">' + escapeHtml(headerObj.letter) + '</span>'
+            : '';
+
+          html += '<th style="' + style + '" data-col="' + index + '" title="' + displayTitle + (hasHeader && headerObj.title !== headerObj.letter ? ' (' + escapeHtml(headerObj.letter) + ')' : '') + '">' +
+            '<div class="th-content">' +
+            '<span class="col-title">' + displayTitle + '</span>' +
+            letterSub +
+            '<span class="sort-indicator">' + sortIndicator + '</span>' +
+            '</div>' +
+            '<div class="col-resizer" data-col="' + index + '"></div></th>';
         }
         html += '</tr></thead><tbody>';
 
-        if (!rows.length) {
+        const startRowIndex = hasHeader ? 1 : 0;
+        const displaySlice = rows.slice(startRowIndex, startRowIndex + state.visibleRowCount);
+
+        if (!displaySlice.length) {
           html += '<tr><td class="empty" colspan="' + (columnCount + 1) + '">No rows to display</td></tr>';
         }
 
-        rows.slice(0, state.visibleRowCount).forEach((row, rowIndex) => {
+        displaySlice.forEach((row, sliceIndex) => {
+          const rowIndex = startRowIndex + sliceIndex;
+          const displayRowNum = hasHeader ? rowIndex : (rowIndex + 1);
           const height = state.rowHeights[rowIndex] || 28;
           html += '<tr style="height: ' + height + 'px;">';
-          html += '<td class="rowhead">' + (rowIndex + 1) + '<div class="row-resizer" data-row="' + rowIndex + '"></div></td>';
+          html += '<td class="rowhead">' + displayRowNum + '<div class="row-resizer" data-row="' + rowIndex + '"></div></td>';
           for (let colIndex = 0; colIndex < columnCount; colIndex++) {
             const value = row[colIndex] ?? '';
             const selected = state.selected && state.selected.row === rowIndex && state.selected.col === colIndex ? ' cell-selected' : '';
@@ -856,6 +1015,13 @@ function buildEditorHtml(nonce, state) {
         state.selected = { row, col };
         const sheet = currentSheet();
         const value = sheet.rows[row]?.[col] ?? '';
+        if (formulaInput) {
+          formulaInput.value = value;
+        }
+        if (cellAddress) {
+          const displayRowNum = state.hasHeader ? row : (row + 1);
+          cellAddress.textContent = columnLabel(col) + displayRowNum;
+        }
         return value;
       }
 
@@ -991,10 +1157,48 @@ function buildEditorHtml(nonce, state) {
         }
       });
 
+      function updateHeaderToggleUI() {
+        const btn = document.getElementById('header-toggle-btn');
+        const badge = document.getElementById('header-toggle-status');
+        if (!btn) return;
+        if (state.hasHeader) {
+          btn.classList.add('active');
+          btn.title = 'First row is currently used as the header. Click to treat as normal data row.';
+          btn.setAttribute('aria-pressed', 'true');
+          if (badge) {
+            badge.textContent = 'ON';
+          }
+        } else {
+          btn.classList.remove('active');
+          btn.title = 'First row is currently treated as data. Click to use as column header.';
+          btn.setAttribute('aria-pressed', 'false');
+          if (badge) {
+            badge.textContent = 'OFF';
+          }
+        }
+      }
+
       function renderAll() {
         updateBanner();
+        updateHeaderToggleUI();
         renderGrid();
         renderSheetTabs();
+      }
+
+      const headerToggleBtn = document.getElementById('header-toggle-btn');
+      if (headerToggleBtn) {
+        headerToggleBtn.addEventListener('click', () => {
+          state.hasHeader = !state.hasHeader;
+          updateHeaderToggleUI();
+          if (state.hasHeader && state.selected && state.selected.row === 0) {
+            state.selected = { row: 1, col: state.selected.col };
+          }
+          renderGrid();
+          vscode.postMessage({
+            type: 'toggleHeader',
+            hasHeader: state.hasHeader
+          });
+        });
       }
 
       // Resize handling
@@ -1106,7 +1310,10 @@ function buildEditorHtml(nonce, state) {
         const rows = sheet.rows || [];
 
         searchMatches = [];
-        rows.forEach((row, rowIndex) => {
+        const startRow = (state.hasHeader && rows.length > 1) ? 1 : 0;
+        for (let rowIndex = startRow; rowIndex < rows.length; rowIndex++) {
+          const row = rows[rowIndex];
+          if (!row) continue;
           row.forEach((value, colIndex) => {
             const text = String(value ?? '').toLowerCase();
             if (text.includes(query)) {
@@ -1116,7 +1323,7 @@ function buildEditorHtml(nonce, state) {
               });
             }
           });
-        });
+        }
 
         if (searchMatches.length > 0) {
           activeMatchIndex = 0;
@@ -1134,7 +1341,7 @@ function buildEditorHtml(nonce, state) {
         const activeMatch = searchMatches[activeMatchIndex];
 
         // Ensure the active match row is visible
-        if (activeMatch.row >= state.visibleRowCount) {
+        if (activeMatch.row >= state.visibleRowCount + (state.hasHeader ? 1 : 0)) {
           state.visibleRowCount = Math.max(state.visibleRowCount, activeMatch.row + 100);
           renderGrid();
         }
@@ -1233,13 +1440,14 @@ function buildEditorHtml(nonce, state) {
 
         if (rows.length === 0) return;
 
-        const targetRow = Math.max(0, Math.min(row, rows.length - 1));
+        const minRow = (state.hasHeader && rows.length > 1) ? 1 : 0;
+        const targetRow = Math.max(minRow, Math.min(row, rows.length - 1));
         const targetCol = Math.max(0, Math.min(col, columnCount - 1));
 
         state.selected = { row: targetRow, col: targetCol };
 
         let needsRender = false;
-        if (targetRow >= state.visibleRowCount) {
+        if (targetRow >= state.visibleRowCount + (state.hasHeader ? 1 : 0)) {
           state.visibleRowCount = Math.min(rows.length, targetRow + 500);
           needsRender = true;
         }
@@ -1262,7 +1470,8 @@ function buildEditorHtml(nonce, state) {
         // Update Formula Bar
         if (cellAddress && formulaInput) {
           const colLabel = columnLabel(targetCol);
-          cellAddress.textContent = colLabel + (targetRow + 1);
+          const displayRowNum = state.hasHeader ? targetRow : (targetRow + 1);
+          cellAddress.textContent = colLabel + displayRowNum;
           const value = sheet.rows[targetRow]?.[targetCol] ?? '';
           formulaInput.value = value;
         }
@@ -1626,7 +1835,12 @@ function buildEditorHtml(nonce, state) {
 
       function sortGrid(colIndex) {
         const sheet = currentSheet();
-        const rows = sheet.rows || [];
+        const allRows = sheet.rows || [];
+        if (allRows.length === 0) return;
+
+        const hasHeader = Boolean(state.hasHeader && allRows.length > 0);
+        const headerRow = hasHeader ? allRows[0] : null;
+        const rows = hasHeader ? allRows.slice(1) : allRows;
         if (rows.length === 0) return;
 
         rows.forEach((row, idx) => {
@@ -1653,6 +1867,8 @@ function buildEditorHtml(nonce, state) {
           state.sortColumn = -1;
         }
 
+        sheet.rows = headerRow ? [headerRow, ...rows] : rows;
+
         renderGrid();
 
         // Notify VS Code of the row sorting change
@@ -1660,7 +1876,8 @@ function buildEditorHtml(nonce, state) {
           type: 'sortSheet',
           sheetIndex: state.activeSheetIndex,
           colIndex: colIndex,
-          direction: nextDir
+          direction: nextDir,
+          hasHeader: hasHeader
         });
       }
 
@@ -1754,7 +1971,7 @@ vscode.postMessage({
           // Server-side changes (undo/redo/loadAll) reset client sort visuals.
           resetSortState();
           // Make sure the selected row is visible after a server-driven row change.
-          if (state.selected && state.selected.row >= state.visibleRowCount) {
+          if (state.selected && state.selected.row >= state.visibleRowCount + (state.hasHeader ? 1 : 0)) {
             state.visibleRowCount = Math.min(
               (currentSheet().rows || []).length,
               state.selected.row + 500
@@ -1765,7 +1982,8 @@ vscode.postMessage({
           if (state.selected && cellAddress && formulaInput) {
             const sheet = currentSheet();
             const { row, col } = state.selected;
-            cellAddress.textContent = columnLabel(col) + (row + 1);
+            const displayRowNum = state.hasHeader ? row : (row + 1);
+            cellAddress.textContent = columnLabel(col) + displayRowNum;
             formulaInput.value = sheet.rows[row]?.[col] ?? '';
           }
         }
@@ -1781,7 +1999,7 @@ vscode.postMessage({
 
 class SpreadsheetDocument {
   constructor(snapshot) {
-const cloned = cloneSnapshot(snapshot);
+    const cloned = cloneSnapshot(snapshot);
     this.uri = snapshot.uri;
     Object.assign(this, cloned);
     this.uri = snapshot.uri;
@@ -1789,17 +2007,22 @@ const cloned = cloneSnapshot(snapshot);
     this.undoStack = [];
     this.redoStack = [];
     this.maxUndoEntries = 500;
+    this.hasHeader = snapshot.hasHeader;
   }
 
   dispose() {
     // No-op cleanup required by Custom Document interface
   }
 
-  sortSheet(colIndex, direction, sheetIndex) {
+  sortSheet(colIndex, direction, sheetIndex, hasHeader) {
     const targetIndex = sheetIndex == null ? this.activeSheetIndex : sheetIndex;
     const sheet = this.sheets[targetIndex] || this.activeSheet;
-    const rows = sheet.rows || [];
-    const beforeRows = rows.map((row) => row.slice());
+    const allRows = sheet.rows || [];
+    const beforeRows = allRows.map((row) => row.slice());
+
+    const isHeaderMode = Boolean((hasHeader !== undefined ? hasHeader : this.hasHeader) && allRows.length > 0);
+    const headerRow = isHeaderMode ? allRows[0] : null;
+    const rows = isHeaderMode ? allRows.slice(1) : allRows;
 
     rows.forEach((row, idx) => {
       if (row._originalIndex === undefined) {
@@ -1827,7 +2050,9 @@ const cloned = cloneSnapshot(snapshot);
       rows.sort((a, b) => a._originalIndex - b._originalIndex);
     }
 
-    const afterRows = rows.map((row) => row.slice());
+    sheet.rows = headerRow ? [headerRow, ...rows] : rows;
+
+    const afterRows = sheet.rows.map((row) => row.slice());
     this._pushUndo({ type: 'sort', sheetIndex: targetIndex, beforeRows, afterRows, colIndex, direction });
     this.dirty = true;
     this.version += 1;
@@ -1936,6 +2161,20 @@ const cloned = cloneSnapshot(snapshot);
   }
 
   toWebviewState() {
+    const config = getConfig();
+    const sheet = this.activeSheet;
+    const rows = sheet ? sheet.rows || [] : [];
+    let hasHeader;
+    if (this.hasHeader !== undefined) {
+      hasHeader = this.hasHeader;
+    } else if (config.hasHeader === 'always') {
+      hasHeader = true;
+    } else if (config.hasHeader === 'never') {
+      hasHeader = false;
+    } else {
+      hasHeader = detectHasHeader(rows);
+    }
+
     return {
       fileName: this.fileName,
       kind: this.kind,
@@ -1948,7 +2187,8 @@ const cloned = cloneSnapshot(snapshot);
       delimiter: this.delimiter,
       lineEnding: this.lineEnding,
       limited: Boolean(this.limited),
-      settings: getConfig(),
+      hasHeader,
+      settings: config,
     };
   }
 
@@ -2101,12 +2341,17 @@ class CsvEditorProvider {
             return;
           }
 
+          if (message.type === 'toggleHeader') {
+            document.hasHeader = Boolean(message.hasHeader);
+            return;
+          }
+
           if (message.type === 'sortSheet') {
             await document.ensureEditable();
             const sheetIndex = Number.isFinite(message.sheetIndex)
               ? Number(message.sheetIndex)
               : document.activeSheetIndex;
-            document.sortSheet(Number(message.colIndex), message.direction, sheetIndex);
+            document.sortSheet(Number(message.colIndex), message.direction, sheetIndex, message.hasHeader);
             this._changeEmitter.fire({ document });
             return;
           }

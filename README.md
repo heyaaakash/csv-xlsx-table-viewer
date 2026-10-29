@@ -47,6 +47,7 @@ CSV XLSX Table Viewer turns a file that usually sends you to another app into an
 ### What you can do
 
 - Open CSV, TSV, XLSX, and XLS in a table editor.
+- Automatic header row detection with a 1-click **Header Row** toggle directly in the toolbar.
 - Search and sort data, with raw and summary views for inspection.
 - Edit cells and save supported files in place.
 - Move between workbook sheets with clickable tabs or `Alt+←` / `Alt+→`.
@@ -68,6 +69,7 @@ Open **Preferences: Open Settings** and search for **CSV XLSX Table Viewer**.
 
 | Setting | Default | What it controls |
 | --- | --- | --- |
+| `csvViewer.hasHeader` | `auto` | `auto`, `always`, or `never` treat row 1 as column header |
 | `csvViewer.themeMode` | `auto` | `auto`, `colorful`, or `minimal` appearance |
 | `csvViewer.density` | `comfortable` | `comfortable` or `compact` row spacing |
 | `csvViewer.maxRowsForClientSort` | `200000` | Maximum rows allowed for client-side sorting |
