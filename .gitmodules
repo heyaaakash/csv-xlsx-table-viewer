@@ -1,0 +1,3 @@
+[submodule "PrivateAssets"]
+	path = PrivateAssets
+	url = git@github.com:heyaaakash/csv-xlsx-table-viewer-private-assets.git

@@ -87,6 +87,8 @@ npm ci
 npm run build
 ```
 
+> **Maintainer note:** Unreleased assets are in the private submodule `PrivateAssets/`. Clone with `--recurse-submodules`.
+
 Run these commands from a clone of the source repository. Open the project in VS Code and press `F5` to launch an Extension Development Host. The build bundles the extension into `dist/1.0.0/extension.js`. To create a VSIX, install the [VS Code Extension Manager](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) with `npm install -g @vscode/vsce`, prepare its compatible README, then package and install it with **Extensions: Install from VSIX...**:
 
 ```sh
