@@ -21,4 +21,10 @@ dist/**/*.vsix
 dist/**/packages/**
 dist/**/staging/**
 dist/archive/**
+PrivateAssets/**/*.map
+PrivateAssets/**/*.vsix
+PrivateAssets/**/packages/**
+PrivateAssets/**/staging/**
+PrivateAssets/archive/**
+PrivateAssets/media/**
 .gitignore

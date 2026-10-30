@@ -11,6 +11,6 @@ CSV XLSX Table Viewer is a Node-based VS Code extension with a custom-editor web
 
 ## Build layout
 
-`src/extension.js` is the extension entry point. `scripts/build.js` bundles it and `xlsx` into `dist/<version>/extension.js`; the VS Code API stays external. The manifest points to the current version's bundle, and packaging runs the build first.
+`src/extension.js` is the extension entry point. `scripts/build.js` bundles it and `xlsx` into `PrivateAssets/builds/<version>/extension.js`; the VS Code API stays external. The manifest points to the current version's bundle, and packaging runs the build first.
 
 This extension uses Node APIs and does not support VS Code's browser host.

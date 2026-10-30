@@ -4,13 +4,13 @@ The Marketplace extension ID is `aakashrohilla.csv-xlsx-table-viewer`. Keep that
 
 ## Prepare and inspect
 
-1. Update the version in `package.json` and `package-lock.json`, and point `main` to `./dist/<version>/extension.js`. Put user-facing release notes in the GitHub Release description.
+1. Update the version in `package.json` and `package-lock.json`, and point `main` to `./PrivateAssets/builds/<version>/extension.js`. Put user-facing release notes in the GitHub Release description.
 2. From a clean checkout, run `npm ci` and `npm run build`.
-3. Generate the Marketplace README and package the extension. For version `1.0.0`:
+3. Generate the Marketplace README and package the extension. For version `1.1.0`:
 
    ```sh
    npm run prepare:marketplace-readme
-   vsce package --githubBranch main --readme-path .vscode/README.marketplace.md --out dist/1.0.0/packages/csv-xlsx-table-viewer-1.0.0.vsix
+   vsce package --githubBranch main --readme-path .vscode/README.marketplace.md --out PrivateAssets/builds/1.1.0/packages/csv-xlsx-table-viewer-1.1.0.vsix
    ```
 
 4. Inspect the VSIX. Confirm its ID, version, README, generated bundle, icon, license, and included docs; check that local data and development-only files are absent.

@@ -29,7 +29,7 @@
     "table",
     "viewer"
   ],
-  "main": "./dist/1.1.0/extension.js",
+  "main": "./PrivateAssets/builds/1.1.0/extension.js",
   "contributes": {
     "commands": [
       {
